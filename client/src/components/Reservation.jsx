@@ -14,36 +14,58 @@ const Reservation = () => {
     const[phone,setPhone]=useState(0)
     const navigate=useNavigate()
 
-    const handleReservation=async(e)=>{
+    const handleReservation = async (e) => {
         e.preventDefault();
-        const fullTime=`${time} ${ampm}`
-        // const data={firstName,lastName,email,phone,date,time}
-        // console.log(data)
-       try {
-        const {data}=await axios.post(
-            "http://localhost:4000/api/v1/reservation/send",
-            {firstName,lastName,email,phone,date,time:fullTime},
-            {
-                headers:{
-                    "Content-Type":"application/json",
-                },
-                withCredentials:true,
+        const fullTime = `${time} ${ampm}`;
+        const formData = { firstName, lastName, email, phone, date, time: fullTime };
+    
+        console.log("Form Data:", formData);
+    
+        try {
+            const response = await axios.post(
+                "https://mern-0lf9.onrender.com/api/v1/reservation/send",
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true,
+                }
+            );
+            
+            console.log("Response Data:", response.data);
+    
+            if (response.data && response.data.message) {
+                toast.success(response.data.message);
+                setFirstName("");
+                setLastName("");
+                setPhone(0);
+                setEmail("");
+                setTime("");
+                setDate("");
+                setAmPm("AM");
+                navigate("/success");
+            } else {
+                toast.error("Reservation successful, but no message received from server.");
             }
-        );
-        toast.success(data.message);
-        setFirstName("");
-        setLastName("");
-        setPhone(0);
-        setEmail("");
-        setTime("");
-        setDate("");
-        setAmPm("AM")
-        navigate("/success")
-
-       } catch (error) {
-        toast.error(error.response.data.message)
-       }
-    }
+        } catch (error) {
+            console.log("Error:", error);
+    
+            if (error.response) {
+                console.log("Error Response Data:", error.response.data);
+                console.log("Error Response Status:", error.response.status);
+                console.log("Error Response Headers:", error.response.headers);
+                toast.error(error.response.data.message || "An error occurred while making the reservation.");
+            } else if (error.request) {
+                console.log("Error Request Data:", error.request);
+                toast.error("No response received from server.");
+            } else {
+                console.log("Error Message:", error.message);
+                toast.error("An error occurred while making the reservation.");
+            }
+        }
+    };
+    
   return (
     <section className='reservation' id='reservation'>
       <div className="container">
