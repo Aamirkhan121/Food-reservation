@@ -23,7 +23,7 @@ const Reservation = () => {
     
         try {
             const response = await axios.post(
-                "https://mern-0lf9.onrender.com/api/v1/reservation/send",
+                "http://localhost:4000/api/v1/reservation/send",
                 formData,
                 {
                     headers: {
